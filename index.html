@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+    <script type='text/javascript'>
+        // setup audio context
+        var audioContext;
+        window.addEventListener('load', init, false);
+
+        function init() {
+            try {
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioContext();
+            } catch (e) {
+                console.log("AudioContext not supported on this Browser.")
+            }
+        }
+
+        function resumeAudio() {
+            audioContext.resume().then(() => {
+                console.log("Resumed Audio.")
+            });
+        }
+
+        // load webassembly application
+        var Module = {};
+        fetch('index.wasm')
+            .then(response =>
+                response.arrayBuffer()
+            ).then(buffer => {
+                Module.canvas = document.getElementById("canvas");
+                Module.wasmBinary = buffer;
+                var script = document.createElement('script');
+                script.src = "index.js";
+                document.body.appendChild(script);
+            });
+    </script>
+    <canvas id="canvas" style="width:736; height:496" onclick="resumeAudio()"></canvas>
+</body>
+
+</html>
