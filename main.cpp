@@ -25,8 +25,6 @@ const int AMPLITUDE = 28000;
 const int SAMPLE_RATE = 44100;
 const int AUDIO_BUFFER_SIZE = 2048;
 
-SDL_AudioSpec audio_spec;
-
 void audio_callback(void *user_data, Uint8 *raw_buffer, int bytes)
 {
     Sint16 *buffer = (Sint16*)raw_buffer;
@@ -34,7 +32,7 @@ void audio_callback(void *user_data, Uint8 *raw_buffer, int bytes)
 
     float notes[] = { 523.2511f, 659.2551f, 783.9909f };
     for (int i = 0; i < length; sample_number++) {
-        double time = (double)sample_number / (double)audio_spec.freq;
+        double time = (double)sample_number / (double)SAMPLE_RATE;
         float f = 0;
         int n = time * 10;
         if (n < 3) {
@@ -59,9 +57,7 @@ void audio_init()
     want.channels = 2;
     want.samples = AUDIO_BUFFER_SIZE;
     want.callback = audio_callback;
-    if (SDL_OpenAudio(&want, &audio_spec) != 0) fprintf(stderr, "Failed to open audio: %s\n", SDL_GetError());
-    if (audio_spec.channels != 2) fprintf(stderr, "No stereo audio\n");
-    if (audio_spec.format != AUDIO_S16SYS) fprintf(stderr, "Wrong format\n");
+    if (SDL_OpenAudio(&want, NULL) != 0) fprintf(stderr, "Failed to open audio: %s\n", SDL_GetError());
 
     // start playing sound
     SDL_PauseAudio(0); 
